@@ -1,5 +1,5 @@
 class TestScene extends Phaser.Scene {
-  private player: Phaser.GameObjects.Sprite;
+  private player: Phaser.Physics.Arcade.Sprite;
   private cursors: any;
 
   constructor() {
@@ -9,36 +9,73 @@ class TestScene extends Phaser.Scene {
   }
 
   public preload() {
-    this.load.tilemapTiledJSON("map", "/assets/tilemaps/desert.json");
-    this.load.image("Desert", "/assets/tilemaps/tmw_desert_spacing.png");
-    this.load.image("player", "/assets/sprites/mushroom.png");
+    this.load.tilemapTiledJSON("map", "/assets/maps/test_map.json");
+    this.load.image("tiles", "/assets/images/tilesheet.png");
+    this.load.spritesheet("player", "/assets/images/player.png", {
+      frameWidth: 64,
+      frameHeight: 64
+    });
   }
 
   public create() {
     const map = this.make.tilemap({ key: "map" });
-    const tileset = map.addTilesetImage("Desert");
-    const layer = map.createStaticLayer(0, tileset, 0, 0);
+    const tileset = map.addTilesetImage("Tilesheet", "tiles");
 
-    this.player = this.add.sprite(100, 100, "player");
+    map.createStaticLayer("Bottom", tileset, 0, 0);
+    map.createStaticLayer("Middle", tileset, 0, 0);
+    map.createStaticLayer("Top", tileset, 0, 0);
+    map.createStaticLayer("UltraTop", tileset, 0, 0);
+
+    this.player = this.physics.add.sprite(500, 500, "player");
     this.cursors = this.input.keyboard.createCursorKeys();
 
     this.cameras.main.setBounds(0, 0, map.widthInPixels, map.heightInPixels);
     this.cameras.main.startFollow(this.player, false);
+
+    this.anims.create({
+      key: "down",
+      frames: this.anims.generateFrameNumbers("player", { start: 12, end: 17 }),
+      frameRate: 10,
+      repeat: -1
+    });
+
+    this.anims.create({
+      key: "up",
+      frames: this.anims.generateFrameNumbers("player", { start: 6, end: 11 }),
+      frameRate: 10,
+      repeat: -1
+    });
+
+    this.anims.create({
+      key: "left",
+      frames: this.anims.generateFrameNumbers("player", { start: 18, end: 21 }),
+      frameRate: 10,
+      repeat: -1
+    });
+
+    this.anims.create({
+      key: "right",
+      frames: this.anims.generateFrameNumbers("player", { start: 1, end: 4 }),
+      frameRate: 10,
+      repeat: -1
+    });
   }
 
   public update(time: number, delta: number) {
-    this.player.angle += 1;
     if (this.cursors.left.isDown) {
       this.player.x -= 5;
-    }
-    if (this.cursors.right.isDown) {
+      this.player.anims.play("left", true);
+    } else if (this.cursors.right.isDown) {
       this.player.x += 5;
-    }
-    if (this.cursors.down.isDown) {
+      this.player.anims.play("right", true);
+    } else if (this.cursors.down.isDown) {
       this.player.y += 5;
-    }
-    if (this.cursors.up.isDown) {
+      this.player.anims.play("down", true);
+    } else if (this.cursors.up.isDown) {
       this.player.y -= 5;
+      this.player.anims.play("up", true);
+    } else {
+      this.player.anims.stop();
     }
   }
 }

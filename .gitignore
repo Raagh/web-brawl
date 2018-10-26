@@ -1,6 +1,6 @@
-node_modules/
-dist/
-build/
+# System and IDE files
+Thumbs.db
+.DS_Store
 .vscode/
 .idea
 *.log
@@ -12,11 +12,34 @@ phaserTilemapfix
 *.wav
 legacy*
 *.txt
-dump/
 *.docx
 *.patch
 *.bak*
 *.old*
-higherVolume/
 yarn.lock
+
+# Vendors
+node_modules/
+higherVolume/
+
+# Build
+npm-debug.log
 package-lock.json
+build/
+out/
+dist/
+dump/
+
+
+
+
+
+
+
+
+
+
+
+
+
+

@@ -5,7 +5,10 @@ import TestScene from "./scenes/play.scene";
 const config: GameConfig = {
   type: Phaser.AUTO,
   physics: {
-    default: "arcade"
+    default: "arcade",
+    arcade: {
+      gravity: {y: 0}
+    }
   },
   parent: "content",
   width: 1000,
@@ -18,5 +21,4 @@ const config: GameConfig = {
   },
   scene: [TestScene]
 };
-
 new Phaser.Game(config);

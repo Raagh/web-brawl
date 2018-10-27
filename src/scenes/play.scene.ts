@@ -26,16 +26,13 @@ class TestScene extends Phaser.Scene {
     const worldLayer = map.createStaticLayer("Middle", tileset, 0, 0);
     map.createStaticLayer("Top", tileset, 0, 0);
     const aboveLayer = map.createStaticLayer("UltraTop", tileset, 0, 0);
-    // Activamos collision de esta layer si tienen la property collides en true
     worldLayer.setCollisionByProperty({ collides: true });      
-    // Debug para ver las collisions
     const debugGraphics = this.add.graphics().setAlpha(0.75);  
     worldLayer.renderDebug(debugGraphics, {                    
        tileColor: null,
        collidingTileColor: new Phaser.Display.Color(243,134,48, 255),
        faceColor: new Phaser.Display.Color(40,39,37,255)
      });
-    // Le damos una depth alta para saber que es la ultima layer
     aboveLayer.setDepth(10);
     this.player = this.physics.add.sprite(500, 500, "player");
     this.cursors = this.input.keyboard.createCursorKeys();

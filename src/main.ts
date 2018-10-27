@@ -21,5 +21,4 @@ const config: GameConfig = {
   },
   scene: [TestScene]
 };
-
 new Phaser.Game(config);

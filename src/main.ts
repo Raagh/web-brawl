@@ -7,12 +7,12 @@ const config: GameConfig = {
   physics: {
     default: "arcade",
     arcade: {
-      gravity: {y: 0}
+      gravity: { y: 0 }
     }
   },
   parent: "content",
-  width: 1000,
-  height: 1000,
+  width: 968,
+  height: 968,
   resolution: 1,
   backgroundColor: "#EDEEC9",
   render: {

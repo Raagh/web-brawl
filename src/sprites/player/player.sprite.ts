@@ -1,4 +1,5 @@
 import "phaser";
+
 import { PlayerAnimationManager } from "./player.animation-manager";
 
 export class Player extends Phaser.Physics.Arcade.Sprite {

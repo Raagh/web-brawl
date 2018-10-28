@@ -16,6 +16,7 @@
     "@babel/polyfill": "^7.0.0-rc.2",
     "@babel/preset-env": "^7.0.0-rc.2",
     "@babel/preset-typescript": "^7.0.0-rc.2",
+    "@types/socket.io-client": "^1.4.32",
     "awesome-typescript-loader": "^3.4.1",
     "babel-loader": "8.0.0-beta.2",
     "browser-sync": "^2.18.13",
@@ -28,6 +29,8 @@
     "webpack": "3.11.0"
   },
   "dependencies": {
-    "phaser": "^3.11.0"
+    "phaser": "^3.11.0",
+    "socket.io-client": "^2.0.2",
+    "socket.io-json-parser": "^2.1.0"
   }
 }

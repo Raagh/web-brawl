@@ -1,15 +1,19 @@
 import { Player } from "../sprites/player/player.sprite";
 import { MainSceneManager } from "./main-scene.manager";
+import { PlayerSocketService } from "../services/player-socket.service";
 
 class MainScene extends Phaser.Scene {
-  private sceneManager: MainSceneManager;
-  private player: Player;
+  private readonly sceneManager: MainSceneManager;
+  private readonly playerSocketService: PlayerSocketService;
   private cursors: any;
+  private player: Player;
+
   constructor() {
     super({
       key: "MainScene"
     });
     this.sceneManager = new MainSceneManager(this, true);
+    this.playerSocketService = new PlayerSocketService();
   }
 
   public preload() {
@@ -17,6 +21,7 @@ class MainScene extends Phaser.Scene {
   }
 
   public create() {
+    this.playerSocketService.createNewPlayer();
     const world = this.sceneManager.createWorld();
     this.player = new Player(this, world, 500, 500);
 

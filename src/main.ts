@@ -1,6 +1,6 @@
 import "phaser";
 
-import TestScene from "./scenes/play.scene";
+import MainScene from "./main/main.scene";
 
 const config: GameConfig = {
   type: Phaser.AUTO,
@@ -19,6 +19,6 @@ const config: GameConfig = {
     pixelArt: true,
     roundPixels: true
   },
-  scene: [TestScene]
+  scene: [MainScene]
 };
-new Phaser.Game(config);
+const game = new Phaser.Game(config);

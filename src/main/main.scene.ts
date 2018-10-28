@@ -21,7 +21,6 @@ class MainScene extends Phaser.Scene {
   }
 
   public create() {
-    this.playerSocketService.createNewPlayer();
     const world = this.sceneManager.createWorld();
     this.player = new Player(this, world, 500, 500);
 

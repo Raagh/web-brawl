@@ -5,7 +5,8 @@ import { PlayerAnimationManager } from "./player.animation-manager";
 export class Player extends Phaser.Physics.Arcade.Sprite {
   public speed: number = 175;
   private readonly animationManager: PlayerAnimationManager;
-
+  private playerId : any;
+  private oldPosition : {x : number, y: number};
   constructor(
     scene: Phaser.Scene,
     world: Phaser.Tilemaps.StaticTilemapLayer,
@@ -19,6 +20,23 @@ export class Player extends Phaser.Physics.Arcade.Sprite {
     scene.physics.add.collider(this, world);
     this.setCollideWorldBounds(true);
     this.animationManager.createWalkAnimations();
+    
+  }
+
+  public getOldPosition() {
+    return this.oldPosition;
+  }
+
+  public setOldPosition(x : number,y : number) {
+    this.oldPosition = {x, y};
+  }
+
+  public setPlayerId(playerId: any) {
+    this.playerId = playerId;
+  }
+
+  public getPlayerId() {
+    return this.playerId;
   }
 
   public moveLeft() {

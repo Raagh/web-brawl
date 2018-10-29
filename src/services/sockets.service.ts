@@ -25,4 +25,12 @@ export class SocketsService {
   public sendWithValues(message: string, data: any) {
     this.socket.emit(message, data);
   }
+
+  public listen(message: string, callback: (args : any) => any) {
+    this.socket.on(message, callback);
+  }
+
+  public getId() {
+    return this.socket.id;
+  }
 }

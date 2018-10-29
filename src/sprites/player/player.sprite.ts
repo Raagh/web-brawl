@@ -1,12 +1,10 @@
 import "phaser";
 
-import { PlayerAnimationManager } from "./player.animation-manager";
-
 export class Player extends Phaser.Physics.Arcade.Sprite {
   public speed: number = 175;
-  private readonly animationManager: PlayerAnimationManager;
-  private playerId : any;
-  private oldPosition : {x : number, y: number};
+  private _id: any;
+  private _oldPosition: { x: number; y: number };
+
   constructor(
     scene: Phaser.Scene,
     world: Phaser.Tilemaps.StaticTilemapLayer,
@@ -14,29 +12,26 @@ export class Player extends Phaser.Physics.Arcade.Sprite {
     positionY: number
   ) {
     super(scene, positionX, positionY, "player");
-    this.animationManager = new PlayerAnimationManager(scene);
     scene.add.existing(this);
     scene.physics.add.existing(this);
     scene.physics.add.collider(this, world);
     this.setCollideWorldBounds(true);
-    this.animationManager.createWalkAnimations();
-    
   }
 
-  public getOldPosition() {
-    return this.oldPosition;
+  public get oldPosition() {
+    return this._oldPosition;
   }
 
-  public setOldPosition(x : number,y : number) {
-    this.oldPosition = {x, y};
+  public set oldPosition(position: any) {
+    this._oldPosition = position;
   }
 
-  public setPlayerId(playerId: any) {
-    this.playerId = playerId;
+  public set id(playerId: any) {
+    this._id = playerId;
   }
 
-  public getPlayerId() {
-    return this.playerId;
+  public get id() {
+    return this._id;
   }
 
   public moveLeft() {

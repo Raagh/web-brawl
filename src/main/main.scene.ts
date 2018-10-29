@@ -1,21 +1,24 @@
 import { PlayerSocketService } from "../services/player-socket.service";
+import { PlayerAnimationManager } from "../sprites/player/player.animation-manager";
 import { Player } from "../sprites/player/player.sprite";
 import { MainSceneManager } from "./main-scene.manager";
 
-class MainScene extends Phaser.Scene {
+export default class MainScene extends Phaser.Scene {
   private readonly sceneManager: MainSceneManager;
+  private readonly animationManager: PlayerAnimationManager;
   private playerSocketService: PlayerSocketService;
   private cursors: any;
   private player: Player;
-  private otherPlayers : Phaser.Physics.Arcade.Group;
-  private world : Phaser.Tilemaps.StaticTilemapLayer;
+  private otherPlayers: Player[] = [];
+  private world: Phaser.Tilemaps.StaticTilemapLayer;
 
   constructor() {
     super({
-      key: "MainScene"
+      key: "MainScene",
     });
     this.sceneManager = new MainSceneManager(this, true);
-    
+    this.playerSocketService = new PlayerSocketService();
+    this.animationManager = new PlayerAnimationManager(this);
   }
 
   public preload() {
@@ -24,37 +27,18 @@ class MainScene extends Phaser.Scene {
 
   public create() {
     this.world = this.sceneManager.createWorld();
-    this.otherPlayers = this.physics.add.group(); 
-    this.playerSocketService = new PlayerSocketService(this);
+    this.animationManager.createWalkAnimations();
     this.cursors = this.input.keyboard.createCursorKeys();
     this.player = new Player(this, this.world, 500, 500);
-
-    this.playerSocketService.listenToServer('newPlayer', (playerInfo) => {
-      this.addOtherPlayer(playerInfo);
-    });
-
-    this.playerSocketService.listenToServer('disconnect', (playerId) => {
-      this.otherPlayers.getChildren().forEach((otherPlayer) => {
-        if(playerId === otherPlayer.getPlayerId()) {
-          otherPlayer.destroy();
-        }
-      });
-    });
-
-    this.playerSocketService.listenToServer('playerMoved', (playerInfo) => {
-      this.otherPlayers.getChildren().forEach((otherPlayer) => {
-        if(playerInfo.playerId === otherPlayer.getPlayerId()) {
-          otherPlayer.setPosition(playerInfo.x, playerInfo.y);
-        }
-      });
-    });
     this.cameras.main.startFollow(this.player, false);
-  }
 
-  public addOtherPlayer(playerInfo) {
-    const otherPlayer = new Player(this, this.world, playerInfo.x, playerInfo.y);
-    otherPlayer.setPlayerId(playerInfo.playerId);
-    this.otherPlayers.add(otherPlayer);
+    this.playerSocketService.connect();
+    this.playerSocketService.setupServerListeners(
+      players => this.addCurrentPlayers(players),
+      playerInfo => this.addOtherPlayer(playerInfo),
+      playerInfo => this.movePlayer(playerInfo),
+      playerId => this.removeOtherPlayer(playerId)
+    );
   }
 
   public update(time: number, delta: number) {
@@ -74,11 +58,47 @@ class MainScene extends Phaser.Scene {
     this.player.body.velocity.normalize().scale(this.player.speed);
     let x = this.player.x;
     let y = this.player.y;
-    if(this.player.getOldPosition() && (x !== this.player.getOldPosition().x || y !== this.player.getOldPosition().y)) {
+    if (
+      this.player.oldPosition &&
+      (x !== this.player.oldPosition.x || y !== this.player.oldPosition.y)
+    ) {
       this.playerSocketService.movePlayer(this.player.x, this.player.y);
     }
-    this.player.setOldPosition(this.player.x, this.player.y);
+    this.player.oldPosition = { x: this.player.x, y: this.player.y };
+  }
+
+  private removeOtherPlayer(playerId: any): any {
+    this.otherPlayers.forEach(otherPlayer => {
+      if (playerId === otherPlayer.id) {
+        otherPlayer.destroy();
+      }
+    });
+  }
+
+  private addCurrentPlayers(players) {
+    Object.keys(players).forEach(id => {
+      if (players[id].playerId !== this.playerSocketService.getSocketId()) {
+        this.addOtherPlayer(players[id]);
+      }
+    });
+  }
+
+  private addOtherPlayer(playerInfo) {
+    const otherPlayer = new Player(
+      this,
+      this.world,
+      playerInfo.x,
+      playerInfo.y
+    );
+    otherPlayer.id = playerInfo.playerId;
+    this.otherPlayers.push(otherPlayer);
+  }
+
+  private movePlayer(playerInfo) {
+    this.otherPlayers.forEach(otherPlayer => {
+      if (playerInfo.playerId === otherPlayer.id) {
+        otherPlayer.setPosition(playerInfo.x, playerInfo.y);
+      }
+    });
   }
 }
-
-export default MainScene;

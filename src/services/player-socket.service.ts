@@ -12,12 +12,13 @@ export class PlayerSocketService {
     currentPlayersCallback,
     newPlayerCallback,
     playerMovedCallback,
-    disconnectCallback
+    disconnectCallback,
+    directionCallback,
   ) {
     this.socketService.listen("currentPlayers", currentPlayersCallback);
     this.socketService.listen("newPlayer", newPlayerCallback);
-    this.socketService.listen("playerMoved", playerMovedCallback);
     this.socketService.listen("disconnect", disconnectCallback);
+    this.socketService.listen("playerDirectionChanged", directionCallback);
   }
 
   public movePlayer(positionX: number, positionY: number) {
@@ -25,6 +26,10 @@ export class PlayerSocketService {
       x: positionX,
       y: positionY,
     });
+  }
+
+  public movePlayerDirection(direction : string) {
+    this.socketService.sendWithValues("playerDirection", direction);
   }
 
   public getSocketId() {

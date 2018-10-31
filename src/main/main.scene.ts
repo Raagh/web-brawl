@@ -37,7 +37,8 @@ export default class MainScene extends Phaser.Scene {
       players => this.addCurrentPlayers(players),
       playerInfo => this.addOtherPlayer(playerInfo),
       playerInfo => this.movePlayer(playerInfo),
-      playerId => this.removeOtherPlayer(playerId)
+      playerId => this.removeOtherPlayer(playerId),
+      playerInfo => this.playerDirectionChanged(playerInfo),
     );
   }
 
@@ -46,14 +47,19 @@ export default class MainScene extends Phaser.Scene {
 
     if (this.cursors.left.isDown) {
       this.player.moveLeft();
+      this.playerSocketService.movePlayerDirection('left');
     } else if (this.cursors.right.isDown) {
       this.player.moveRight();
+      this.playerSocketService.movePlayerDirection('right');
     } else if (this.cursors.down.isDown) {
       this.player.moveDown();
+      this.playerSocketService.movePlayerDirection('down');
     } else if (this.cursors.up.isDown) {
       this.player.moveUp();
+      this.playerSocketService.movePlayerDirection('up');
     } else {
       this.player.anims.stop();
+      this.playerSocketService.movePlayerDirection('idle');
     }
     this.player.body.velocity.normalize().scale(this.player.speed);
     let x = this.player.x;
@@ -62,7 +68,7 @@ export default class MainScene extends Phaser.Scene {
       this.player.oldPosition &&
       (x !== this.player.oldPosition.x || y !== this.player.oldPosition.y)
     ) {
-      this.playerSocketService.movePlayer(this.player.x, this.player.y);
+        this.playerSocketService.movePlayer(this.player.x, this.player.y); 
     }
     this.player.oldPosition = { x: this.player.x, y: this.player.y };
   }
@@ -94,11 +100,23 @@ export default class MainScene extends Phaser.Scene {
     this.otherPlayers.push(otherPlayer);
   }
 
-  private movePlayer(playerInfo) {
+  private playerDirectionChanged(playerInfo) {
+
     this.otherPlayers.forEach(otherPlayer => {
-      if (playerInfo.playerId === otherPlayer.id) {
+      otherPlayer.setVelocity(0);
+      if(playerInfo.direction === 'up') {
+        otherPlayer.moveUp();
+      } else if(playerInfo.direction === 'down') {
+        otherPlayer.moveDown();
+      } else if(playerInfo.direction === 'right') {
+        otherPlayer.moveRight();
+      } else if(playerInfo.direction === 'left') {
+        otherPlayer.moveLeft();
+      } else {
         otherPlayer.setPosition(playerInfo.x, playerInfo.y);
+        otherPlayer.anims.stop();
       }
+      otherPlayer.body.velocity.normalize().scale(otherPlayer.speed);
     });
   }
 }
